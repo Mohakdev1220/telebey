@@ -1,171 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telebey — Messenger</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telebey — Premium Messenger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <!-- ===== AUTH SCREEN ===== -->
-    <div id="auth-container" class="auth-wrapper">
-        <div class="auth-card">
-            <div class="auth-logo">
-                <div class="logo-icon">✈</div>
-                <h1>Telebey</h1>
-                <p>Sign in to your account</p>
-            </div>
-            <div class="input-group">
-                <div class="input-field">
-                    <label for="auth-email">Email</label>
-                    <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
-                </div>
-                <div class="input-field">
-                    <label for="auth-password">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="auth-password" placeholder="Enter password" autocomplete="current-password">
-                        <button class="toggle-password" id="toggle-pw" title="Show password">👁</button>
-                    </div>
-                </div>
-            </div>
-            <div id="auth-error" class="auth-error" style="display:none;"></div>
-            <div class="auth-buttons">
-                <button id="login-btn" class="btn-primary">
-                    <span class="btn-text">Sign In</span>
-                    <span class="btn-loader" style="display:none;">⟳</span>
-                </button>
-                <button id="signup-btn" class="btn-secondary">Create Account</button>
-            </div>
-            <p class="auth-footer">Your messages are end-to-end encrypted</p>
+<!-- ═══════════════════════════════════════════════
+     AUTH SCREEN
+════════════════════════════════════════════════ -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-mark">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="logo-name">Telebey</span>
+    </div>
+    <p class="auth-subtitle">Sign in to continue</p>
+
+    <div class="field-group">
+      <div class="field">
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="auth-password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="auth-password" placeholder="Enter password" autocomplete="current-password" />
+          <button class="pw-toggle" id="pw-toggle" type="button" title="Toggle password visibility">
+            <svg id="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
         </div>
+      </div>
     </div>
 
-    <!-- ===== MAIN APP ===== -->
-    <div id="main-app" class="app-container" style="display:none;">
+    <div id="auth-error" class="auth-error" role="alert" aria-live="polite"></div>
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-title-row">
-                    <div class="sidebar-brand">
-                        <span class="sidebar-logo">✈</span>
-                        <h3>Telebey</h3>
-                    </div>
-                    <div class="sidebar-actions">
-                        <button class="icon-btn" id="new-room-btn" title="New Room">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        </button>
-                        <button class="icon-btn" id="logout-btn" title="Sign Out">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="sidebar-search">
-                    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" id="room-search" placeholder="Search rooms..." autocomplete="off">
-                </div>
-            </div>
-            <div class="chat-list" id="group-list">
-                <div class="list-loading">
-                    <div class="skeleton-item"></div>
-                    <div class="skeleton-item"></div>
-                    <div class="skeleton-item"></div>
-                </div>
-            </div>
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="avatar avatar-sm" id="user-avatar-sidebar">?</div>
-                    <span id="user-display-name" class="user-email-text">Loading…</span>
-                </div>
-            </div>
-        </aside>
-<div class="app-logo">
-    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M22 2L2 10.5L9.5 14.5L13.5 22L22 2Z" fill="#5288c1"/>
-    </svg>
+    <div class="auth-actions">
+      <button id="login-btn" class="btn-primary">
+        <span class="btn-label">Sign In</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+      <button id="signup-btn" class="btn-ghost">Create account</button>
+    </div>
+
+    <p class="auth-note">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Messages are end-to-end encrypted
+    </p>
+  </div>
 </div>
-        <!-- NEW ROOM MODAL -->
-        <div id="new-room-modal" class="modal-overlay" style="display:none;">
-            <div class="modal-card">
-                <div class="modal-header">
-                    <h3>Create New Room</h3>
-                    <button class="icon-btn" id="close-modal-btn">✕</button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-field">
-                        <label>Room Name</label>
-                        <input type="text" id="new-group-name" placeholder="e.g. Family, Work Team…" maxlength="60">
-                    </div>
-                    <div class="input-field">
-                        <label>Description <span style="color:#7f8c9d;font-weight:400;">(optional)</span></label>
-                        <input type="text" id="new-group-desc" placeholder="What's this room about?" maxlength="120">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-secondary" id="cancel-modal-btn">Cancel</button>
-                    <button class="btn-primary" id="make-group-btn">Create Room</button>
-                </div>
-            </div>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════════════ -->
+<div id="main-app" class="main-app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-brand">
+        <div class="logo-mark sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-
-        <!-- CHAT AREA -->
-        <main class="chat-area">
-            <!-- No room selected state -->
-            <div class="empty-state" id="empty-state">
-                <div class="empty-icon">✈</div>
-                <h2>Welcome to Telebey</h2>
-                <p>Select a room from the sidebar or create a new one to start chatting.</p>
-                <button class="btn-primary" id="empty-new-room-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    New Room
-                </button>
-            </div>
-
-            <!-- Active chat view -->
-            <div id="chat-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
-                <div class="chat-header" id="chat-header">
-                    <button class="icon-btn back-btn" id="back-btn" title="Back">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    </button>
-                    <div class="chat-header-avatar" id="chat-avatar">G</div>
-                    <div class="chat-header-info">
-                        <strong id="chat-room-name">Room Name</strong>
-                        <span id="chat-room-status" class="chat-status">Loading…</span>
-                    </div>
-                </div>
-
-                <div class="messages-container" id="message-box">
-                    <div class="messages-date-label">Today</div>
-                </div>
-
-                <!-- Image preview before send -->
-                <div id="image-preview-bar" class="image-preview-bar" style="display:none;">
-                    <img id="preview-img" src="" alt="preview">
-                    <button id="cancel-image-btn" class="cancel-img-btn" title="Remove">✕</button>
-                </div>
-
-                <div class="input-area">
-                    <input type="file" id="media-input" accept="image/*,video/*" style="display:none;">
-                    <button class="attach-btn icon-btn" id="attach-btn" title="Attach file">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                    </button>
-                    <div class="input-wrapper">
-                        <textarea id="user-input" placeholder="Message…" autocomplete="off" rows="1"></textarea>
-                    </div>
-                    <button id="send-btn" class="send-btn" title="Send message">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    </button>
-                </div>
-            </div>
-        </main>
+        <span class="brand-name">Telebey</span>
+        <div class="live-dot" id="live-dot" title="Live sync active"></div>
+      </div>
+      <div class="sidebar-controls">
+        <button class="icon-btn" id="open-new-room-btn" title="New room">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="icon-btn" id="logout-btn" title="Sign out">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
     </div>
 
-    <audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2357/2357-84.wav" preload="auto"></audio>
-    <script src="script.js"></script>
+    <div class="sidebar-search-bar">
+      <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="room-search" placeholder="Search rooms…" autocomplete="off" />
+    </div>
+
+    <div class="room-list" id="room-list">
+      <!-- Skeleton loaders -->
+      <div class="skeleton-list" id="room-skeleton">
+        <div class="skeleton-item"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line w70"></div><div class="sk-line w45"></div></div></div>
+        <div class="skeleton-item"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line w55"></div><div class="sk-line w35"></div></div></div>
+        <div class="skeleton-item"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line w80"></div><div class="sk-line w50"></div></div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-av" id="sidebar-user-av">?</div>
+        <div class="user-chip-info">
+          <span class="user-chip-name" id="sidebar-user-name">Loading…</span>
+          <span class="user-chip-status">
+            <span class="online-dot"></span> Online
+          </span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- NEW ROOM MODAL -->
+  <div class="modal-overlay" id="new-room-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-title">New Room</h3>
+        <button class="icon-btn" id="close-modal-btn" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="new-room-name">Room name</label>
+          <input type="text" id="new-room-name" placeholder="e.g. Family, Work Team, 2025 Plans…" maxlength="60" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="new-room-desc">Description <span class="opt-label">(optional)</span></label>
+          <input type="text" id="new-room-desc" placeholder="What's this room for?" maxlength="120" autocomplete="off" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost sm" id="cancel-modal-btn">Cancel</button>
+        <button class="btn-primary sm" id="create-room-btn">
+          <span class="btn-label">Create room</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD MEMBER MODAL -->
+  <div class="modal-overlay" id="add-member-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="add-member-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="add-member-title">Add member</h3>
+        <button class="icon-btn" id="close-add-member-btn" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="add-member-email">User email</label>
+          <input type="email" id="add-member-email" placeholder="friend@example.com" autocomplete="off" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost sm" id="cancel-add-member-btn">Cancel</button>
+        <button class="btn-primary sm" id="confirm-add-member-btn">
+          <span class="btn-label">Add to room</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="modal-overlay" id="confirm-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="modal-box sm">
+      <div class="modal-header">
+        <h3 id="confirm-modal-title">Confirm</h3>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-modal-text" class="confirm-text"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost sm" id="confirm-cancel-btn">Cancel</button>
+        <button class="btn-danger sm" id="confirm-ok-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXT MENU -->
+  <div class="ctx-menu" id="ctx-menu" style="display:none" role="menu" aria-label="Message actions">
+    <button class="ctx-item" id="ctx-unsend" role="menuitem">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+      Unsend
+    </button>
+    <button class="ctx-item" id="ctx-delete-me" role="menuitem">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      Delete for me
+    </button>
+    <button class="ctx-item" id="ctx-download" role="menuitem">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </button>
+    <button class="ctx-item" id="ctx-share" role="menuitem">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share
+    </button>
+  </div>
+
+  <!-- MAIN CHAT AREA -->
+  <main class="chat-area" id="chat-area">
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>Pick a room to start</h2>
+      <p>Select a room from the sidebar, or create a new one.</p>
+      <button class="btn-primary" id="empty-new-room-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New room
+      </button>
+    </div>
+
+    <!-- CHAT VIEW -->
+    <div class="chat-view" id="chat-view" style="display:none">
+
+      <!-- CHAT HEADER -->
+      <header class="chat-header">
+        <button class="icon-btn back-btn" id="back-btn" aria-label="Back to rooms">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="room-av" id="chat-room-av">G</div>
+        <div class="chat-header-info">
+          <strong id="chat-room-name">Room</strong>
+          <span id="chat-room-meta" class="chat-room-meta">Loading…</span>
+        </div>
+        <div class="chat-header-actions">
+          <button class="icon-btn" id="room-settings-btn" title="Room settings">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ROOM SETTINGS DROPDOWN -->
+      <div class="room-settings-dropdown" id="room-settings-dropdown" style="display:none">
+        <button class="dropdown-item" id="add-member-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Add member
+        </button>
+        <button class="dropdown-item danger" id="delete-room-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          Delete room
+        </button>
+      </div>
+
+      <!-- TYPING INDICATOR -->
+      <div class="typing-bar" id="typing-bar" style="display:none">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+        <span id="typing-text">Someone is typing…</span>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="messages-wrap" id="message-box" role="log" aria-live="polite" aria-label="Messages">
+        <div class="date-pill">Today</div>
+      </div>
+
+      <!-- IMAGE PREVIEW BAR -->
+      <div class="preview-bar" id="preview-bar" style="display:none">
+        <img id="preview-thumb" src="" alt="Preview" />
+        <div class="preview-info">
+          <span id="preview-name">image.jpg</span>
+          <span id="preview-size">—</span>
+        </div>
+        <button class="icon-btn" id="cancel-preview-btn" title="Remove">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- UPLOAD PROGRESS -->
+      <div class="upload-progress-bar" id="upload-progress-bar" style="display:none">
+        <div class="upload-progress-fill" id="upload-progress-fill"></div>
+      </div>
+
+      <!-- INPUT AREA -->
+      <div class="input-area">
+        <input type="file" id="media-input" accept="image/*,video/*" style="display:none" aria-label="Attach file" />
+        <button class="icon-btn attach-btn" id="attach-btn" title="Attach file" aria-label="Attach file">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <div class="input-pill">
+          <textarea id="msg-input" placeholder="Message…" rows="1" autocomplete="off" aria-label="Message input"></textarea>
+        </div>
+        <button class="send-btn" id="send-btn" aria-label="Send message" title="Send">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div><!-- /.chat-view -->
+
+  </main>
+
+</div><!-- /#main-app -->
+
+<!-- IMAGE LIGHTBOX -->
+<div class="lightbox" id="lightbox" style="display:none" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Close image">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <img id="lightbox-img" src="" alt="Full-size image" />
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-root" class="toast-root" aria-live="assertive" aria-atomic="true"></div>
+
+<!-- NOTIFICATION SOUND -->
+<audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2357/2357-84.wav" preload="auto"></audio>
+
+<script src="script.js"></script>
 </body>
 </html>
