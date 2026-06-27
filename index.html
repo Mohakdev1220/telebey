@@ -2,314 +2,735 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Telebey — Premium Messenger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0e14" />
+  <meta name="description" content="Telebey — Connect with anyone, anywhere." />
+  <link rel="manifest" href="manifest.json" />
+  <title>Telebey</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Emoji Picker -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
+
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body data-theme="dark">
 
-<!-- ═══════════════════════════════════════════════
-     AUTH SCREEN
-════════════════════════════════════════════════ -->
-<div id="auth-screen" class="auth-screen">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div class="logo-mark">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <span class="logo-name">Telebey</span>
-    </div>
-    <p class="auth-subtitle">Sign in to continue</p>
-
-    <div class="field-group">
-      <div class="field">
-        <label for="auth-email">Email</label>
-        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
-      </div>
-      <div class="field">
-        <label for="auth-password">Password</label>
-        <div class="pw-wrap">
-          <input type="password" id="auth-password" placeholder="Enter password" autocomplete="current-password" />
-          <button class="pw-toggle" id="pw-toggle" type="button" title="Toggle password visibility">
-            <svg id="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg id="eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="auth-error" class="auth-error" role="alert" aria-live="polite"></div>
-
-    <div class="auth-actions">
-      <button id="login-btn" class="btn-primary">
-        <span class="btn-label">Sign In</span>
-        <span class="btn-spinner" aria-hidden="true"></span>
-      </button>
-      <button id="signup-btn" class="btn-ghost">Create account</button>
-    </div>
-
-    <p class="auth-note">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Messages are end-to-end encrypted
-    </p>
+<!-- ===== LOADING SCREEN ===== -->
+<div id="loading-screen" class="loading-screen">
+  <div class="loading-logo">
+    <div class="loading-logo-icon">T</div>
+    <div class="loading-logo-text">Telebey</div>
+  </div>
+  <div class="loading-spinner">
+    <div class="spinner-ring"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     MAIN APP
-════════════════════════════════════════════════ -->
-<div id="main-app" class="main-app" style="display:none">
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ===== UNDO SEND BAR ===== -->
+<div id="undo-bar" class="undo-bar hidden">
+  <span>Message sent</span>
+  <button id="btn-undo-send">Undo</button>
+  <div id="undo-progress"></div>
+</div>
+
+<!-- ===== AUTH SCREEN ===== -->
+<div id="auth-screen" class="auth-screen hidden">
+  <div class="auth-bg">
+    <div class="auth-bg-blob b1"></div>
+    <div class="auth-bg-blob b2"></div>
+    <div class="auth-bg-blob b3"></div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">T</div>
+      <h1>Telebey</h1>
+      <p>Connect with anyone, anywhere.</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Sign In</button>
+      <button class="auth-tab" data-tab="register">Register</button>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div id="auth-panel-login" class="auth-panel active">
+      <!-- Google Sign In -->
+      <button class="btn-google" id="btn-google-login">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <div class="auth-method-toggle">
+        <button class="method-btn active" data-method="email">Email</button>
+        <button class="method-btn" data-method="phone">Phone / OTP</button>
+      </div>
+
+      <!-- Email login -->
+      <div id="login-email-form" class="method-form active">
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+            <button class="toggle-pw" id="toggle-login-pw" tabindex="-1">👁</button>
+          </div>
+        </div>
+        <div class="forgot-row">
+          <button class="link-btn" id="btn-forgot-password">Forgot password?</button>
+        </div>
+        <div class="input-group remember-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="remember-me" /> Remember me
+          </label>
+        </div>
+        <button class="btn-primary" id="btn-email-login">Sign In</button>
+      </div>
+
+      <!-- Phone OTP login -->
+      <div id="login-phone-form" class="method-form">
+        <div id="phone-step-1">
+          <div class="input-group">
+            <label>Phone Number</label>
+            <input type="tel" id="login-phone" placeholder="+1234567890" />
+          </div>
+          <button class="btn-primary" id="btn-send-otp">Send OTP</button>
+        </div>
+        <div id="phone-step-2" class="hidden">
+          <p class="otp-hint">Enter the 6-digit code sent to your phone.</p>
+          <div class="input-group">
+            <label>OTP Code</label>
+            <input type="text" id="login-otp" placeholder="123456" maxlength="6" inputmode="numeric" />
+          </div>
+          <button class="btn-primary" id="btn-verify-otp">Verify &amp; Sign In</button>
+          <button class="btn-ghost" id="btn-resend-otp">Resend Code</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div id="auth-panel-register" class="auth-panel">
+      <!-- Google Sign Up -->
+      <button class="btn-google" id="btn-google-register">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign up with Google
+      </button>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <div class="input-group">
+        <label>Username <span class="req">*</span></label>
+        <input type="text" id="reg-username" placeholder="yourname" maxlength="30" />
+        <small class="input-hint">Letters, numbers, underscores only.</small>
+      </div>
+      <div class="input-group">
+        <label>Display Name</label>
+        <input type="text" id="reg-display-name" placeholder="Your Full Name" maxlength="50" />
+      </div>
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input type="tel" id="reg-phone" placeholder="+1234567890" />
+      </div>
+      <div class="input-group">
+        <label>Email <span class="req">*</span></label>
+        <input type="email" id="reg-email" placeholder="you@example.com" />
+      </div>
+      <div class="input-group">
+        <label>Password <span class="req">*</span></label>
+        <div class="password-wrapper">
+          <input type="password" id="reg-password" placeholder="Min 8 characters" minlength="8" />
+          <button class="toggle-pw" id="toggle-reg-pw" tabindex="-1">👁</button>
+        </div>
+        <div class="password-strength" id="password-strength"></div>
+      </div>
+      <button class="btn-primary" id="btn-register">Create Account</button>
+    </div>
+
+    <!-- FORGOT PASSWORD PANEL -->
+    <div id="auth-panel-forgot" class="auth-panel">
+      <p class="auth-hint">Enter your email and we'll send you a password reset link.</p>
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="forgot-email" placeholder="you@example.com" />
+      </div>
+      <button class="btn-primary" id="btn-send-reset">Send Reset Link</button>
+      <button class="btn-ghost" id="btn-back-to-login">← Back to Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app" class="app hidden">
+
+  <!-- COMMAND PALETTE (Ctrl+K) -->
+  <div id="command-palette" class="command-palette hidden">
+    <div class="command-palette-inner">
+      <div class="command-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="command-input" placeholder="Search chats, people, commands…" autocomplete="off" />
+        <kbd>Esc</kbd>
+      </div>
+      <div id="command-results" class="command-results"></div>
+    </div>
+  </div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-top">
-      <div class="sidebar-brand">
-        <div class="logo-mark sm">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <span class="brand-name">Telebey</span>
-        <div class="live-dot" id="live-dot" title="Live sync active"></div>
-      </div>
-      <div class="sidebar-controls">
-        <button class="icon-btn" id="open-new-room-btn" title="New room">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Telebey</div>
+      <div class="sidebar-header-actions">
+        <button class="icon-btn" id="btn-new-group" title="New Group (Ctrl+G)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
         </button>
-        <button class="icon-btn" id="logout-btn" title="Sign out">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <button class="icon-btn" id="btn-saved-messages" title="Saved Messages">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
         </button>
       </div>
     </div>
 
-    <div class="sidebar-search-bar">
-      <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="search" id="room-search" placeholder="Search rooms…" autocomplete="off" />
+    <!-- SEARCH -->
+    <div class="sidebar-search">
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Search…" />
+        <button class="icon-btn search-clear hidden" id="btn-search-clear" title="Clear">✕</button>
+      </div>
+      <div id="contact-search-results" class="contact-search-results hidden"></div>
     </div>
 
+    <!-- FILTER TABS -->
+    <div class="sidebar-filter-tabs">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="unread">Unread</button>
+      <button class="filter-tab" data-filter="pinned">Pinned</button>
+      <button class="filter-tab" data-filter="archived">Archived</button>
+    </div>
+
+    <!-- ROOM LIST -->
     <div class="room-list" id="room-list">
-      <!-- Skeleton loaders -->
-      <div class="skeleton-list" id="room-skeleton">
-        <div class="skeleton-item"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line w70"></div><div class="sk-line w45"></div></div></div>
-        <div class="skeleton-item"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line w55"></div><div class="sk-line w35"></div></div></div>
-        <div class="skeleton-item"><div class="sk-av"></div><div class="sk-lines"><div class="sk-line w80"></div><div class="sk-line w50"></div></div></div>
+      <div class="room-list-empty hidden" id="room-list-empty">
+        <div class="empty-icon-wrap">💬</div>
+        <p>No conversations yet.</p>
+        <small>Search for someone to start chatting.</small>
       </div>
     </div>
 
+    <!-- NOTIFICATIONS BADGE -->
+    <div class="notif-pill hidden" id="notif-pill">
+      <span id="notif-count">0</span> new
+    </div>
+
+    <!-- SIDEBAR FOOTER -->
     <div class="sidebar-footer">
-      <div class="user-chip">
-        <div class="user-av" id="sidebar-user-av">?</div>
-        <div class="user-chip-info">
-          <span class="user-chip-name" id="sidebar-user-name">Loading…</span>
-          <span class="user-chip-status">
-            <span class="online-dot"></span> Online
-          </span>
+      <div class="current-user-chip" id="current-user-chip">
+        <div class="avatar sm" id="sidebar-user-avatar"></div>
+        <div class="sidebar-user-info">
+          <span id="sidebar-username">Loading…</span>
+          <span id="sidebar-status-text" class="sidebar-status"></span>
         </div>
+      </div>
+      <div class="sidebar-footer-actions">
+        <button class="icon-btn" id="btn-notifications" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge hidden" id="notif-badge">0</span>
+        </button>
+        <button class="icon-btn" id="btn-settings" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="icon-btn signout-btn" id="btn-signout" title="Sign Out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
       </div>
     </div>
   </aside>
-
-  <!-- NEW ROOM MODAL -->
-  <div class="modal-overlay" id="new-room-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 id="modal-title">New Room</h3>
-        <button class="icon-btn" id="close-modal-btn" aria-label="Close">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="field">
-          <label for="new-room-name">Room name</label>
-          <input type="text" id="new-room-name" placeholder="e.g. Family, Work Team, 2025 Plans…" maxlength="60" autocomplete="off" />
-        </div>
-        <div class="field">
-          <label for="new-room-desc">Description <span class="opt-label">(optional)</span></label>
-          <input type="text" id="new-room-desc" placeholder="What's this room for?" maxlength="120" autocomplete="off" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-ghost sm" id="cancel-modal-btn">Cancel</button>
-        <button class="btn-primary sm" id="create-room-btn">
-          <span class="btn-label">Create room</span>
-          <span class="btn-spinner" aria-hidden="true"></span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADD MEMBER MODAL -->
-  <div class="modal-overlay" id="add-member-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="add-member-title">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 id="add-member-title">Add member</h3>
-        <button class="icon-btn" id="close-add-member-btn" aria-label="Close">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="field">
-          <label for="add-member-email">User email</label>
-          <input type="email" id="add-member-email" placeholder="friend@example.com" autocomplete="off" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-ghost sm" id="cancel-add-member-btn">Cancel</button>
-        <button class="btn-primary sm" id="confirm-add-member-btn">
-          <span class="btn-label">Add to room</span>
-          <span class="btn-spinner" aria-hidden="true"></span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONFIRM MODAL -->
-  <div class="modal-overlay" id="confirm-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
-    <div class="modal-box sm">
-      <div class="modal-header">
-        <h3 id="confirm-modal-title">Confirm</h3>
-      </div>
-      <div class="modal-body">
-        <p id="confirm-modal-text" class="confirm-text"></p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-ghost sm" id="confirm-cancel-btn">Cancel</button>
-        <button class="btn-danger sm" id="confirm-ok-btn">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTEXT MENU -->
-  <div class="ctx-menu" id="ctx-menu" style="display:none" role="menu" aria-label="Message actions">
-    <button class="ctx-item" id="ctx-unsend" role="menuitem">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
-      Unsend
-    </button>
-    <button class="ctx-item" id="ctx-delete-me" role="menuitem">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      Delete for me
-    </button>
-    <button class="ctx-item" id="ctx-download" role="menuitem">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download
-    </button>
-    <button class="ctx-item" id="ctx-share" role="menuitem">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Share
-    </button>
-  </div>
 
   <!-- MAIN CHAT AREA -->
   <main class="chat-area" id="chat-area">
 
     <!-- EMPTY STATE -->
-    <div class="empty-state" id="empty-state">
-      <div class="empty-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="chat-empty-state" id="chat-empty-state">
+      <div class="empty-icon">💬</div>
+      <h2>Welcome to Telebey</h2>
+      <p>Select a conversation or start a new one.</p>
+      <div class="empty-shortcuts">
+        <kbd>Ctrl</kbd>+<kbd>K</kbd> to search anywhere
       </div>
-      <h2>Pick a room to start</h2>
-      <p>Select a room from the sidebar, or create a new one.</p>
-      <button class="btn-primary" id="empty-new-room-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New room
-      </button>
     </div>
 
-    <!-- CHAT VIEW -->
-    <div class="chat-view" id="chat-view" style="display:none">
+    <!-- ACTIVE CHAT VIEW -->
+    <div class="chat-view hidden" id="chat-view">
 
       <!-- CHAT HEADER -->
-      <header class="chat-header">
-        <button class="icon-btn back-btn" id="back-btn" aria-label="Back to rooms">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <div class="chat-header" id="chat-header">
+        <button class="icon-btn back-btn" id="btn-back-to-list">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <div class="room-av" id="chat-room-av">G</div>
-        <div class="chat-header-info">
-          <strong id="chat-room-name">Room</strong>
-          <span id="chat-room-meta" class="chat-room-meta">Loading…</span>
+        <div class="chat-header-info" id="chat-header-info-btn">
+          <div class="avatar md" id="chat-header-avatar"></div>
+          <div class="chat-header-text">
+            <span id="chat-header-name">Room Name</span>
+            <span id="chat-header-meta">Loading…</span>
+          </div>
         </div>
         <div class="chat-header-actions">
-          <button class="icon-btn" id="room-settings-btn" title="Room settings">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          <button class="icon-btn" id="btn-search-msgs" title="Search Messages">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-toggle-info" title="Room Info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </button>
         </div>
-      </header>
+      </div>
 
-      <!-- ROOM SETTINGS DROPDOWN -->
-      <div class="room-settings-dropdown" id="room-settings-dropdown" style="display:none">
-        <button class="dropdown-item" id="add-member-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-          Add member
-        </button>
-        <button class="dropdown-item danger" id="delete-room-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          Delete room
-        </button>
+      <!-- IN-CHAT SEARCH BAR -->
+      <div class="in-chat-search hidden" id="in-chat-search">
+        <input type="text" id="in-chat-search-input" placeholder="Search messages…" />
+        <span id="in-chat-search-count"></span>
+        <button class="icon-btn" id="btn-search-msgs-prev">▲</button>
+        <button class="icon-btn" id="btn-search-msgs-next">▼</button>
+        <button class="icon-btn" id="btn-close-search-msgs">✕</button>
+      </div>
+
+      <!-- PINNED MESSAGE BAR -->
+      <div class="pinned-bar hidden" id="pinned-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2L8.5 10H3l5.5 4L6 22l6-4 6 4-2.5-8L21 10h-5.5z"/></svg>
+        <span id="pinned-bar-text">Pinned message</span>
+        <button id="btn-close-pinned-bar" class="icon-btn sm">✕</button>
       </div>
 
       <!-- TYPING INDICATOR -->
-      <div class="typing-bar" id="typing-bar" style="display:none">
+      <div class="typing-indicator hidden" id="typing-indicator">
+        <span id="typing-text">Someone is typing</span>
         <div class="typing-dots"><span></span><span></span><span></span></div>
-        <span id="typing-text">Someone is typing…</span>
       </div>
 
       <!-- MESSAGES -->
-      <div class="messages-wrap" id="message-box" role="log" aria-live="polite" aria-label="Messages">
-        <div class="date-pill">Today</div>
-      </div>
-
-      <!-- IMAGE PREVIEW BAR -->
-      <div class="preview-bar" id="preview-bar" style="display:none">
-        <img id="preview-thumb" src="" alt="Preview" />
-        <div class="preview-info">
-          <span id="preview-name">image.jpg</span>
-          <span id="preview-size">—</span>
+      <div class="messages-container" id="messages-container">
+        <div class="messages-loading hidden" id="messages-loading">
+          <div class="skeleton-msgs">
+            <div class="skeleton-msg incoming"><div class="sk-avatar"></div><div class="sk-bubble"></div></div>
+            <div class="skeleton-msg outgoing"><div class="sk-bubble"></div></div>
+            <div class="skeleton-msg incoming"><div class="sk-avatar"></div><div class="sk-bubble long"></div></div>
+            <div class="skeleton-msg outgoing"><div class="sk-bubble"></div></div>
+          </div>
         </div>
-        <button class="icon-btn" id="cancel-preview-btn" title="Remove">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+        <div id="messages-list"></div>
+        <div id="messages-bottom-anchor"></div>
       </div>
 
-      <!-- UPLOAD PROGRESS -->
-      <div class="upload-progress-bar" id="upload-progress-bar" style="display:none">
-        <div class="upload-progress-fill" id="upload-progress-fill"></div>
-      </div>
+      <!-- SCROLL TO BOTTOM -->
+      <button class="scroll-to-bottom hidden" id="btn-scroll-bottom">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 16l-8-8h16l-8 8z"/></svg>
+        <span class="scroll-unread-count hidden" id="scroll-unread-count">0</span>
+      </button>
 
-      <!-- INPUT AREA -->
-      <div class="input-area">
-        <input type="file" id="media-input" accept="image/*,video/*" style="display:none" aria-label="Attach file" />
-        <button class="icon-btn attach-btn" id="attach-btn" title="Attach file" aria-label="Attach file">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-        </button>
-        <div class="input-pill">
-          <textarea id="msg-input" placeholder="Message…" rows="1" autocomplete="off" aria-label="Message input"></textarea>
+      <!-- REPLY PREVIEW -->
+      <div class="reply-preview hidden" id="reply-preview">
+        <div class="reply-preview-bar"></div>
+        <div class="reply-preview-content">
+          <div class="reply-preview-sender" id="reply-preview-sender"></div>
+          <div class="reply-preview-text" id="reply-preview-text"></div>
         </div>
-        <button class="send-btn" id="send-btn" aria-label="Send message" title="Send">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <button class="icon-btn" id="btn-cancel-reply">✕</button>
+      </div>
+
+      <!-- INPUT BAR -->
+      <div class="input-bar" id="input-bar">
+        <button class="icon-btn attach-btn" id="btn-attach" title="Attach">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+
+        <!-- Attach Popup -->
+        <div id="attach-popup" class="attach-popup hidden">
+          <button class="attach-option" id="att-image">
+            <span>🖼</span> Photo
+          </button>
+          <button class="attach-option" id="att-file">
+            <span>📎</span> File
+          </button>
+          <button class="attach-option" id="att-gif">
+            <span>🎞</span> GIF
+          </button>
+        </div>
+
+        <input type="file" id="file-input" accept="image/*,video/*" class="hidden" />
+        <input type="file" id="file-input-any" accept="*/*" class="hidden" />
+
+        <button class="icon-btn emoji-btn" id="btn-emoji" title="Emoji">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </button>
+
+        <div class="message-input-wrapper">
+          <textarea id="message-input" placeholder="Type a message…" rows="1" maxlength="4000"></textarea>
+        </div>
+
+        <button class="icon-btn mic-btn" id="btn-mic" title="Voice Note">
+          <svg id="mic-icon-normal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          <svg id="mic-icon-recording" class="hidden recording-pulse" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+        </button>
+
+        <button class="icon-btn send-btn" id="btn-send" title="Send">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
         </button>
       </div>
-    </div><!-- /.chat-view -->
 
+      <!-- EMOJI PICKER POPUP -->
+      <div id="emoji-picker-container" class="emoji-picker-container hidden">
+        <emoji-picker></emoji-picker>
+      </div>
+
+      <!-- RECORDING INDICATOR -->
+      <div id="recording-indicator" class="recording-indicator hidden">
+        <div class="rec-dot"></div>
+        <span id="recording-timer">0:00</span>
+        <span>Recording…</span>
+        <div class="rec-waveform">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <button class="btn-ghost sm" id="btn-cancel-recording">Cancel</button>
+      </div>
+    </div>
   </main>
 
-</div><!-- /#main-app -->
+  <!-- INFO PANEL (right drawer) -->
+  <aside class="info-panel" id="info-panel">
+    <div class="info-panel-header">
+      <h3>Info</h3>
+      <button class="icon-btn" id="btn-close-info">✕</button>
+    </div>
+    <div class="info-panel-content" id="info-panel-content">
+      <!-- dynamically filled -->
+    </div>
+  </aside>
 
-<!-- IMAGE LIGHTBOX -->
-<div class="lightbox" id="lightbox" style="display:none" role="dialog" aria-modal="true" aria-label="Image viewer">
-  <button class="lightbox-close" id="lightbox-close" aria-label="Close image">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  </button>
-  <img id="lightbox-img" src="" alt="Full-size image" />
+  <!-- NOTIFICATIONS PANEL -->
+  <aside class="notif-panel hidden" id="notif-panel">
+    <div class="info-panel-header">
+      <h3>Notifications</h3>
+      <button class="icon-btn" id="btn-close-notif">✕</button>
+    </div>
+    <div id="notif-list" class="notif-list">
+      <div class="notif-empty">No notifications yet.</div>
+    </div>
+    <div class="notif-footer">
+      <button class="btn-ghost sm" id="btn-mark-all-read">Mark all read</button>
+    </div>
+  </aside>
 </div>
 
-<!-- TOAST CONTAINER -->
-<div id="toast-root" class="toast-root" aria-live="assertive" aria-atomic="true"></div>
+<!-- ===== MODALS ===== -->
 
-<!-- NOTIFICATION SOUND -->
-<audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2357/2357-84.wav" preload="auto"></audio>
+<!-- New Group Modal -->
+<div class="modal-overlay hidden" id="modal-new-group">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Create New Group</h3>
+      <button class="icon-btn modal-close" data-modal="modal-new-group">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="avatar-upload-area" id="group-avatar-upload-area">
+        <div class="avatar xl" id="group-avatar-preview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <input type="file" id="group-logo-input" accept="image/*" class="hidden" />
+        <button class="btn-ghost sm" id="btn-upload-group-logo">Upload Logo</button>
+      </div>
+      <div class="input-group">
+        <label>Group Name <span class="req">*</span></label>
+        <input type="text" id="new-group-name" placeholder="My Awesome Group" maxlength="80" />
+      </div>
+      <div class="input-group">
+        <label>Description</label>
+        <textarea id="new-group-desc" placeholder="What's this group about?" rows="2" maxlength="200"></textarea>
+      </div>
+      <div class="input-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="group-is-public" /> Make group public (anyone can join)
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" data-modal="modal-new-group">Cancel</button>
+      <button class="btn-primary" id="btn-create-group">Create Group</button>
+    </div>
+  </div>
+</div>
 
+<!-- Settings Modal -->
+<div class="modal-overlay hidden" id="modal-settings">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h3>Settings</h3>
+      <button class="icon-btn modal-close" data-modal="modal-settings">✕</button>
+    </div>
+    <div class="settings-layout">
+      <!-- Settings Nav -->
+      <nav class="settings-nav">
+        <button class="settings-nav-item active" data-section="profile">👤 Profile</button>
+        <button class="settings-nav-item" data-section="privacy">🔒 Privacy</button>
+        <button class="settings-nav-item" data-section="appearance">🎨 Appearance</button>
+        <button class="settings-nav-item" data-section="notifications">🔔 Notifications</button>
+        <button class="settings-nav-item" data-section="account">⚙️ Account</button>
+      </nav>
+      <!-- Settings Content -->
+      <div class="settings-content" id="settings-content">
+
+        <!-- PROFILE -->
+        <div class="settings-section active" id="settings-section-profile">
+          <div class="avatar-upload-area">
+            <div class="avatar xl" id="settings-avatar-preview"></div>
+            <div class="avatar-banner-upload">
+              <input type="file" id="settings-avatar-input" accept="image/*" class="hidden" />
+              <button class="btn-ghost sm" id="btn-upload-avatar">Change Photo</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="settings-username" placeholder="yourname" maxlength="30" />
+          </div>
+          <div class="input-group">
+            <label>Display Name</label>
+            <input type="text" id="settings-display-name" placeholder="Your Full Name" maxlength="50" />
+          </div>
+          <div class="input-group">
+            <label>Bio</label>
+            <textarea id="settings-bio" placeholder="Tell the world about yourself…" rows="2" maxlength="150"></textarea>
+          </div>
+          <div class="input-group">
+            <label>Status</label>
+            <div class="status-input-row">
+              <input type="text" id="settings-status-emoji" placeholder="🟢" maxlength="2" style="width:50px" />
+              <input type="text" id="settings-status-text" placeholder="Available" maxlength="60" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Phone Number</label>
+            <input type="tel" id="settings-phone" placeholder="+1234567890" />
+          </div>
+          <div class="input-group">
+            <label>Birthday (optional)</label>
+            <input type="date" id="settings-birthday" />
+          </div>
+        </div>
+
+        <!-- PRIVACY -->
+        <div class="settings-section" id="settings-section-privacy">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Last Seen</span>
+              <small>Who can see when you were last active</small>
+            </div>
+            <select id="privacy-last-seen" class="settings-select">
+              <option value="everyone">Everyone</option>
+              <option value="friends">Friends Only</option>
+              <option value="nobody">Nobody</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Online Status</span>
+              <small>Who can see when you're online</small>
+            </div>
+            <select id="privacy-online" class="settings-select">
+              <option value="everyone">Everyone</option>
+              <option value="friends">Friends Only</option>
+              <option value="nobody">Nobody</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Profile Picture</span>
+              <small>Who can see your profile picture</small>
+            </div>
+            <select id="privacy-avatar" class="settings-select">
+              <option value="everyone">Everyone</option>
+              <option value="friends">Friends Only</option>
+              <option value="nobody">Nobody</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Read Receipts</span>
+              <small>Show when you've read messages</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="privacy-read-receipts" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Who Can Message Me</span>
+              <small>Restrict incoming messages</small>
+            </div>
+            <select id="privacy-who-message" class="settings-select">
+              <option value="everyone">Everyone</option>
+              <option value="friends">Friends Only</option>
+              <option value="nobody">Nobody</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- APPEARANCE -->
+        <div class="settings-section" id="settings-section-appearance">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Theme</span>
+            </div>
+            <div class="theme-options">
+              <button class="theme-btn active" data-theme="dark">🌙 Dark</button>
+              <button class="theme-btn" data-theme="light">☀️ Light</button>
+              <button class="theme-btn" data-theme="amoled">⬛ AMOLED</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Accent Color</span>
+            </div>
+            <div class="accent-colors">
+              <button class="accent-btn" data-color="#5865f2" style="background:#5865f2" title="Blurple"></button>
+              <button class="accent-btn" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+              <button class="accent-btn" data-color="#10b981" style="background:#10b981" title="Emerald"></button>
+              <button class="accent-btn" data-color="#f59e0b" style="background:#f59e0b" title="Amber"></button>
+              <button class="accent-btn" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+              <button class="accent-btn" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
+              <input type="color" id="custom-accent" title="Custom color" value="#5865f2" />
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Font Size</span>
+            </div>
+            <div class="font-size-options">
+              <button class="font-btn" data-size="small">S</button>
+              <button class="font-btn active" data-size="medium">M</button>
+              <button class="font-btn" data-size="large">L</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="settings-section" id="settings-section-notifications">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Notification Sound</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="notif-sound" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span>Desktop Notifications</span>
+              <small>Show browser pop-ups for new messages</small>
+            </div>
+            <button class="btn-ghost sm" id="btn-request-notif">Enable</button>
+          </div>
+        </div>
+
+        <!-- ACCOUNT -->
+        <div class="settings-section" id="settings-section-account">
+          <div class="input-group">
+            <label>Change Password</label>
+            <input type="password" id="settings-new-password" placeholder="New password (min 8 chars)" minlength="8" />
+          </div>
+          <button class="btn-primary" id="btn-change-password">Update Password</button>
+          <div class="danger-zone">
+            <h4>Danger Zone</h4>
+            <button class="btn-danger" id="btn-logout-all">Sign Out All Devices</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" data-modal="modal-settings">Cancel</button>
+      <button class="btn-primary" id="btn-save-settings">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Saved Messages Modal -->
+<div class="modal-overlay hidden" id="modal-saved">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h3>📌 Saved Messages</h3>
+      <button class="icon-btn modal-close" data-modal="modal-saved">✕</button>
+    </div>
+    <div class="modal-body" id="saved-messages-list" style="max-height:60vh;overflow-y:auto;">
+      <div class="empty-state-sm">No saved messages yet.<br><small>Right-click any message to save it.</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- Forward Modal -->
+<div class="modal-overlay hidden" id="modal-forward">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Forward Message</h3>
+      <button class="icon-btn modal-close" data-modal="modal-forward">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <input type="text" id="forward-search" placeholder="Search chats…" />
+      </div>
+      <div id="forward-list" style="max-height:300px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Lightbox -->
+<div class="modal-overlay hidden" id="modal-lightbox" style="background:rgba(0,0,0,0.95)">
+  <div class="lightbox-container">
+    <button class="icon-btn lightbox-close" id="btn-close-lightbox">✕</button>
+    <img id="lightbox-img" src="" alt="Full size" />
+    <div class="lightbox-toolbar">
+      <button class="btn-ghost sm" id="btn-lightbox-zoomin">🔍+</button>
+      <button class="btn-ghost sm" id="btn-lightbox-zoomout">🔍−</button>
+      <button class="btn-primary lightbox-download" id="btn-lightbox-download">⬇ Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reaction Picker -->
+<div id="reaction-picker" class="reaction-picker hidden">
+  <button class="react-btn" data-emoji="❤️">❤️</button>
+  <button class="react-btn" data-emoji="😂">😂</button>
+  <button class="react-btn" data-emoji="🔥">🔥</button>
+  <button class="react-btn" data-emoji="👍">👍</button>
+  <button class="react-btn" data-emoji="😮">😮</button>
+  <button class="react-btn" data-emoji="😢">😢</button>
+</div>
+
+<!-- Context Menu -->
+<div id="context-menu" class="context-menu hidden">
+  <button class="context-item" data-action="reply">↩ Reply</button>
+  <button class="context-item" data-action="react">😊 React</button>
+  <button class="context-item" data-action="copy">📋 Copy</button>
+  <button class="context-item" data-action="forward">↗ Forward</button>
+  <button class="context-item" data-action="save">📌 Save Message</button>
+  <button class="context-item" data-action="pin">📍 Pin Message</button>
+  <button class="context-item" data-action="edit">✏️ Edit</button>
+  <button class="context-item" data-action="download">⬇ Download</button>
+  <button class="context-item" data-action="delete-for-me">🙈 Delete for Me</button>
+  <button class="context-item danger" data-action="unsend">🗑 Unsend (for all)</button>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
 </html>
