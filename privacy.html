@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Privacy Policy — Telebey</title>
+  <meta name="description" content="Telebey Privacy Policy — how we collect, use, and protect your data."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#0d0e14;color:#e8eaf6;line-height:1.7;padding:0 16px}
+    .container{max-width:780px;margin:0 auto;padding:48px 0 80px}
+    .logo{display:flex;align-items:center;gap:10px;margin-bottom:40px;text-decoration:none}
+    .logo-icon{width:40px;height:40px;background:#5865f2;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff}
+    .logo-text{font-size:20px;font-weight:700;color:#e8eaf6}
+    h1{font-size:28px;font-weight:700;margin-bottom:8px}
+    .updated{font-size:13px;color:#5a6080;margin-bottom:36px}
+    h2{font-size:17px;font-weight:600;margin:32px 0 10px;color:#c5caf5}
+    p,li{font-size:14px;color:#8b91b8;margin-bottom:10px}
+    ul{padding-left:20px}
+    li{margin-bottom:6px}
+    a{color:#5865f2;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .back-btn{display:inline-flex;align-items:center;gap:6px;background:#1e2030;border:1px solid #2a2d45;color:#8b91b8;padding:8px 16px;border-radius:8px;font-size:13px;text-decoration:none;margin-bottom:32px;transition:all .2s}
+    .back-btn:hover{background:#252840;color:#e8eaf6;text-decoration:none}
+    .highlight{background:#1e2030;border:1px solid #2a2d45;border-radius:10px;padding:16px 20px;margin:20px 0}
+    .highlight p{margin:0;color:#c5caf5}
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="logo">
+    <div class="logo-icon">T</div>
+    <span class="logo-text">Telebey</span>
+  </a>
+  <a href="index.html" class="back-btn">← Back to App</a>
+
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: June 2026</p>
+
+  <div class="highlight">
+    <p>🔒 Telebey is built with privacy as a core principle. We collect only what's necessary to run the service and never sell your data to third parties.</p>
+  </div>
+
+  <h2>1. Information We Collect</h2>
+  <p>When you use Telebey, we may collect the following:</p>
+  <ul>
+    <li><strong>Account information:</strong> Email address, phone number, username, display name, and profile picture — provided by you at registration.</li>
+    <li><strong>Messages:</strong> Text, images, audio, and files you send through the platform. These are stored in our secure Supabase database.</li>
+    <li><strong>Device information:</strong> Browser type, operating system, and IP address for security purposes.</li>
+    <li><strong>Usage data:</strong> When you log in, send messages, or interact with features — for app functionality and debugging.</li>
+  </ul>
+
+  <h2>2. Phone Number OTP Verification</h2>
+  <p>When you register with a phone number:</p>
+  <ul>
+    <li>We send a One-Time Password (OTP) via SMS to verify that the number belongs to you.</li>
+    <li>You must verify the OTP before your phone number is linked to your account.</li>
+    <li>We do not allow using a phone number that you cannot verify via OTP — this prevents impersonation.</li>
+    <li>Your phone number is stored securely and is not visible to other users by default unless you choose to share it.</li>
+  </ul>
+
+  <h2>3. Google Sign-In</h2>
+  <p>If you sign in via Google:</p>
+  <ul>
+    <li>We receive your name and email from Google after you grant permission.</li>
+    <li>We do not receive your Google password.</li>
+    <li>You can revoke access anytime from your <a href="https://myaccount.google.com/permissions" target="_blank">Google Account settings</a>.</li>
+  </ul>
+
+  <h2>4. How We Use Your Information</h2>
+  <ul>
+    <li>To provide and operate the Telebey messaging service.</li>
+    <li>To verify your identity and prevent unauthorized access.</li>
+    <li>To send you service-related messages (e.g., OTP codes, password resets).</li>
+    <li>To improve app performance and debug issues.</li>
+    <li>To comply with legal obligations.</li>
+  </ul>
+
+  <h2>5. Data Sharing</h2>
+  <p>We do <strong>not</strong> sell, rent, or trade your personal information. We may share data only with:</p>
+  <ul>
+    <li><strong>Supabase:</strong> Our database and authentication provider (data stored in secure cloud infrastructure).</li>
+    <li><strong>Twilio (if applicable):</strong> For SMS OTP delivery only — they receive your phone number but not your messages.</li>
+    <li><strong>Law enforcement:</strong> Only when legally required by a valid court order or legal process.</li>
+  </ul>
+
+  <h2>6. Who Can Search For You</h2>
+  <p>By default, only users who know your exact username or phone number can find you. You can control this in Settings → Privacy:</p>
+  <ul>
+    <li>Set who can message you (Everyone / Nobody).</li>
+    <li>Show or hide your phone number.</li>
+    <li>Control who sees your last seen and online status.</li>
+  </ul>
+
+  <h2>7. Data Retention</h2>
+  <ul>
+    <li>Your messages are stored as long as you maintain an account.</li>
+    <li>Deleted messages are removed from our servers immediately.</li>
+    <li>If you delete your account, all your data is permanently erased within 30 days.</li>
+  </ul>
+
+  <h2>8. Cookies</h2>
+  <p>We use essential cookies and localStorage for:</p>
+  <ul>
+    <li>Keeping you logged in (session token).</li>
+    <li>Remembering your theme, font size, and accent color preferences.</li>
+    <li>Offline message queue (so messages aren't lost when you're briefly disconnected).</li>
+  </ul>
+  <p>We do not use advertising cookies or third-party tracking cookies.</p>
+
+  <h2>9. Children's Privacy</h2>
+  <p>Telebey is not intended for users under 13 years of age. We do not knowingly collect data from children. If you believe a child has created an account, contact us and we will delete it promptly.</p>
+
+  <h2>10. Security</h2>
+  <ul>
+    <li>All data is transmitted over HTTPS (TLS encryption).</li>
+    <li>Passwords are hashed and never stored in plain text.</li>
+    <li>Row-Level Security (RLS) ensures users can only access their own data.</li>
+    <li>OTP verification is required for phone-based authentication.</li>
+    <li>Rate limiting is enforced on authentication endpoints.</li>
+  </ul>
+
+  <h2>11. Your Rights</h2>
+  <p>You have the right to:</p>
+  <ul>
+    <li><strong>Access</strong> your personal data stored by Telebey.</li>
+    <li><strong>Correct</strong> inaccurate data via Settings.</li>
+    <li><strong>Delete</strong> your account and all associated data.</li>
+    <li><strong>Export</strong> your data (contact us).</li>
+    <li><strong>Opt out</strong> of non-essential communications.</li>
+  </ul>
+
+  <h2>12. Contact Us</h2>
+  <p>For any privacy concerns or data requests, contact us at:</p>
+  <p><a href="mailto:privacy@telebey.app">privacy@telebey.app</a></p>
+  <p>We will respond within 7 business days.</p>
+
+  <h2>13. Changes to This Policy</h2>
+  <p>We may update this policy periodically. We will notify you of significant changes via in-app notification or email. Continued use of Telebey after changes constitutes acceptance of the updated policy.</p>
+</div>
+</body>
+</html>
